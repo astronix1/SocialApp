@@ -15,19 +15,23 @@ open class Notification(
     @Column(nullable = false)
     open var type: String = "",
 
-    @OneToOne
+    // CHANGED: @OneToOne -> @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "receiver_id")
     open var receiver: User? = null,
 
-    @OneToOne
+    // CHANGED: @OneToOne -> @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "sender_id")
     open var sender: User? = null,
 
-    @OneToOne
+    // CHANGED: @OneToOne -> @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "owning_post_id")
     open var owningPost: Post? = null,
 
-    @OneToOne
+    // CHANGED: @OneToOne -> @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "owning_comment_id")
     open var owningComment: Comment? = null,
 

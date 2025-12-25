@@ -165,4 +165,31 @@ class PostController(
         return ResponseEntity.ok().build()
     }
 
+
+    @GetMapping("/posts/tags/{tagName}")
+    fun getPostsByTag(
+        @PathVariable tagName: String,
+        @RequestParam page: Int,
+        @RequestParam size: Int
+    ): ResponseEntity<List<PostResponse>> {
+        val safePage = if (page < 0) 0 else page - 1
+        val safeSize = if (size <= 0) 5 else size
+
+        val tag = tagService.getTagByName(tagName)
+        return ResponseEntity.ok(postService.getPostByTagPaginate(tag, safePage, safeSize))
+    }
+
+    @GetMapping("/posts/{postId}/shares")
+    fun getPostShares(
+        @PathVariable postId: Long,
+        @RequestParam page: Int,
+        @RequestParam size: Int
+    ): ResponseEntity<List<PostResponse>> {
+        val safePage = if (page < 0) 0 else page - 1
+        val safeSize = if (size <= 0) 5 else size
+
+        val post = postService.getPostById(postId)
+        return ResponseEntity.ok(postService.getPostSharesPaginate(post, safePage, safeSize))
+    }
+
 }
