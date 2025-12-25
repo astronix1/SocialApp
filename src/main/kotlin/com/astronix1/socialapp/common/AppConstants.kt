@@ -50,7 +50,7 @@ object AppConstants {
     const val POST_NOT_FOUND = "No post found."
     const val TAG_NOT_FOUND = "No post found."
     const val TAG_EXISTS = "Tag already exists."
-    const val COUNTRY_NOT_FOUND = "No post found."
+    const val COUNTRY_NOT_FOUND = "Country not found."
     const val COUNTRY_EXISTS = "Country already exists."
     const val EMPTY_POST = "Post does not contain any content"
     const val SHARE_NOT_FOUND = "No share found."

@@ -32,8 +32,8 @@ interface PostService {
     fun deletePost(postId: Long)
     fun deletePostPhoto(postId: Long)
 
-    fun likePost(postId: Long)
-    fun unlikePost(postId: Long)
+    fun likePost(postId: Long): Post
+    fun unlikePost(postId: Long): Post
 
     fun createPostComment(postId: Long, content: String): Comment
     fun updatePostComment(commentId: Long, postId: Long, content: String): Comment

@@ -196,14 +196,14 @@ class PostServiceImpl(
         postRepository.save(post)
     }
 
-    override fun likePost(postId: Long) {
+    override fun likePost(postId: Long): Post {
         val authUser = userService.getAuthenticatedUser()
         val post = getPostById(postId)
 
         if (!post.likeList.add(authUser)) throw InvalidOperationException()
 
         post.likeCount++
-        postRepository.save(post)
+        val savedPost = postRepository.save(post)
 
         if (post.author != authUser)
             notificationService.sendNotification(
@@ -213,22 +213,30 @@ class PostServiceImpl(
                 null,
                 NotificationType.POST_LIKE.name
             )
+
+        return savedPost
     }
 
-    override fun unlikePost(postId: Long) {
+    override fun unlikePost(postId: Long): Post {
         val authUser = userService.getAuthenticatedUser()
         val post = getPostById(postId)
 
         if (!post.likeList.remove(authUser)) throw InvalidOperationException()
 
         post.likeCount--
-        postRepository.save(post)
+        val savedPost = postRepository.save(post)
 
-        notificationService.removeNotification(
-            post.author!!,
-            post,
-            NotificationType.POST_LIKE.name
-        )
+
+
+        if (post.author != authUser) {
+            notificationService.removeNotification(
+                post.author!!,
+                post,
+                NotificationType.POST_LIKE.name
+            )
+        }
+
+        return savedPost
     }
 
     override fun createPostComment(postId: Long, content: String): Comment {

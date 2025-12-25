@@ -19,7 +19,8 @@ class PostController(
     private val postService: PostService,
     private val commentService: CommentService,
     private val userService: UserService,
-    private val tagService: TagService
+    private val tagService: TagService,
+    private val objectMapper: ObjectMapper
 ) {
 
     @PostMapping("/posts/create")
@@ -34,7 +35,7 @@ class PostController(
         }
 
         val tags: List<TagDto>? = postTags?.let {
-            ObjectMapper().readValue(it, object : TypeReference<List<TagDto>>() {})
+            objectMapper.readValue(it, object : TypeReference<List<TagDto>>() {})
         }
 
         val post = postService.createNewPost(content, postPhoto, tags)
@@ -54,7 +55,7 @@ class PostController(
         }
 
         val tags: List<TagDto>? = postTags?.let {
-            ObjectMapper().readValue(it, object : TypeReference<List<TagDto>>() {})
+            objectMapper.readValue(it, object : TypeReference<List<TagDto>>() {})
         }
 
         val updated = postService.updatePost(postId, content, postPhoto, tags)
@@ -76,6 +77,19 @@ class PostController(
     @GetMapping("/posts/{postId}")
     fun getPostById(@PathVariable postId: Long): ResponseEntity<PostResponse> =
         ResponseEntity.ok(postService.getPostResponseById(postId))
+
+    @PostMapping("/posts/{postId}/like")
+    fun likePost(@PathVariable postId: Long): ResponseEntity<PostResponse> {
+        val post = postService.likePost(postId)
+        return ResponseEntity.ok(PostResponse(post, likedByAuthUser = true))
+    }
+
+    @PostMapping("/posts/{postId}/unlike")
+    fun unlikePost(@PathVariable postId: Long): ResponseEntity<PostResponse> {
+        val post = postService.unlikePost(postId)
+        return ResponseEntity.ok(PostResponse(post, likedByAuthUser = false))
+    }
+
 
     @GetMapping("/posts/{postId}/likes")
     fun getPostLikes(
@@ -124,4 +138,31 @@ class PostController(
     @PostMapping("/posts/comments/{commentId}/unlike")
     fun unlikeComment(@PathVariable commentId: Long) =
         ResponseEntity.ok(commentService.unlikeComment(commentId))
+
+
+
+    @PostMapping("/posts/{postId}/share/create")
+    fun createPostShare(
+        @PathVariable postId: Long,
+        @RequestParam(required = false) content: String?
+    ): ResponseEntity<Post> {
+        val share = postService.createPostShare(content, postId)
+        return ResponseEntity(share, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/posts/share/{shareId}/update")
+    fun updatePostShare(
+        @PathVariable shareId: Long,
+        @RequestParam(required = false) content: String?
+    ): ResponseEntity<Post> {
+        val updatedShare = postService.updatePostShare(content, shareId)
+        return ResponseEntity.ok(updatedShare)
+    }
+
+    @PostMapping("/posts/share/{shareId}/delete")
+    fun deletePostShare(@PathVariable shareId: Long): ResponseEntity<Void> {
+        postService.deletePostShare(shareId)
+        return ResponseEntity.ok().build()
+    }
+
 }
